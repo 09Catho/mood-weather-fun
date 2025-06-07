@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Mood Synthesizer</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f9fafb; }
+        .container { max-width: 420px; margin: 60px auto; background: #fff; border-radius: 12px; box-shadow: 0 3px 16px #ccc; padding: 2em; }
+        input, button { width: 100%; padding: 0.8em; margin-top: 1em; font-size: 1.1em; }
+        .result { margin-top: 2em; background: #f3f7ff; padding: 1em; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🌦️ Weather Mood Synthesizer</h2>
+        <form id="mood-form">
+            <input type="text" id="city" placeholder="Enter city..." required>
+            <button type="submit">Get Mood</button>
+        </form>
+        <div class="result" id="result"></div>
+    </div>
+    <script>
+        document.getElementById('mood-form').onsubmit = async function(e) {
+            e.preventDefault();
+            const city = document.getElementById('city').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = "Loading...";
+            try {
+                const resp = await fetch('/mood?city=' + encodeURIComponent(city));
+                if (!resp.ok) throw new Error("City not found or API error.");
+                const data = await resp.json();
+                resultDiv.innerHTML = `<b>${data.city}</b>: ${data.weather}, ${data.temperature_celsius}&deg;C<br><br>
+                                       <strong>Mood:</strong> ${data.mood_report}`;
+            } catch (err) {
+                resultDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
